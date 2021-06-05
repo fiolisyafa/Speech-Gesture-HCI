@@ -13,14 +13,13 @@ public class UnifiedStructure : ISignal
     public float ValidUntil;
     public double environmentWeight;
 
-    public UnifiedStructure(string sourceId, float timeStamp, string semanticMeaning, float confidenceLevel, float validUntil, double environmentWeight = 0)
+    public UnifiedStructure(string sourceId, float timeStamp, string semanticMeaning, float confidenceLevel, float validUntil)
     {
         this.SourceId = sourceId;
         this.TimeStamp = timeStamp;
         this.SemanticMeaning = semanticMeaning;
         this.ConfidenceLevel = confidenceLevel;
         this.ValidUntil = validUntil;
-        this.environmentWeight = environmentWeight;
     }
 
     public override string ToString()
@@ -32,15 +31,13 @@ public class UnifiedStructure : ISignal
                 "semantic: {1}",
                 "confidence: {2}",
                 "time: {3}",
-                "valid until: {4}",
-                "environment weight: {5}"
+                "valid until: {4}"
             ),
             SourceId,
             SemanticMeaning,
             ConfidenceLevel,
             TimeStamp,
-            ValidUntil,
-            environmentWeight
+            ValidUntil
         );
     }
 }

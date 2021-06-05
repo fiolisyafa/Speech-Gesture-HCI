@@ -61,19 +61,19 @@ public class SpeechWatcher : MonoBehaviour, ISignalSender<Speech>
     {
         if (DebugHypothesis)
         {
-            LoggerUtil.Log(DebugTag, "hypothesis -> text: " + text);
+            // LoggerUtil.Log(DebugTag, "hypothesis -> text: " + text);
         }
     }
 
     private void DictationComplete(DictationCompletionCause cause)
     {
-        LoggerUtil.Log(DebugTag, "complete -> " + cause.ToString());
+        // LoggerUtil.Log(DebugTag, "complete -> " + cause.ToString());
         
     }
 
     private void DictationError(string error, int hResult)
     {
-        LoggerUtil.LogError(DebugTag, "error ->" + error + " hresult: " + hResult);
+        // LoggerUtil.LogError(DebugTag, "error ->" + error + " hresult: " + hResult);
     }
 
     private void OnDisable()

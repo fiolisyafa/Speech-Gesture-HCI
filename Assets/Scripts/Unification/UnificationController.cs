@@ -114,7 +114,7 @@ public class UnificationController : MonoBehaviour, ISignalReceiver, ISignalSend
         }
 
         string semantic = list[0].Data.SemanticMeaning;
-        float confidence = list[0].Weight;
+        float confidence = list[0].WeightedConfidence;
         float timestamp = list[0].Data.TimeStamp;
         float validUntil = list[0].Data.ValidUntil;
         //string finalSemantic;
@@ -125,7 +125,7 @@ public class UnificationController : MonoBehaviour, ISignalReceiver, ISignalSend
             if (semantic != item.Data.SemanticMeaning) return null;
             if (timestamp > item.Data.TimeStamp) timestamp = item.Data.TimeStamp;
             if (validUntil < item.Data.ValidUntil) validUntil = item.Data.ValidUntil;
-            confidence += item.Weight;
+            confidence += item.WeightedConfidence;
         }
 
         return new UnifiedStructure(

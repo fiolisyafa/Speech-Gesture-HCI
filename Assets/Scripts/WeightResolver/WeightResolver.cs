@@ -37,7 +37,7 @@ public class WeightResolver : MonoBehaviour, ISignalReceiver, ISignalSender<List
         float weightConstantDivisor = 0f;
         foreach (UnifiedStructure item in list)
         {
-           weightConstantDivisor += item.ConfidenceLevel;
+            weightConstantDivisor += item.ConfidenceLevel;
         }
 
         // weight constant (K) is calculated only in multimodal mode, otherwise it is 1 by default
@@ -56,7 +56,7 @@ public class WeightResolver : MonoBehaviour, ISignalReceiver, ISignalSender<List
         List<WeightedUnifiedStructure> weightedList = new List<WeightedUnifiedStructure>();
         foreach (UnifiedStructure item in list)
         {
-            weightedList.Add(new WeightedUnifiedStructure(item, item.ConfidenceLevel * weightConstant));
+            weightedList.Add(new WeightedUnifiedStructure(item, item.ConfidenceLevel * weightConstant, item.ConfidenceLevel));
         }
 
         if (DebugResult)
@@ -64,7 +64,7 @@ public class WeightResolver : MonoBehaviour, ISignalReceiver, ISignalSender<List
             msg += "result: \n";
             foreach (var item in weightedList)
             {
-                msg += "\nweighted confidence: " + item.Weight + "\ndata: \n" + item.Data.ToString() + "\n";
+                msg += String.Format("\nmodal weight: {0}\nmodal weighted confidence: {1}\ndata: {2}\n\n", item.Weight, item.WeightedConfidence, item.Data.ToString());
             }
 
             LoggerUtil.Log(DebugTag, msg);

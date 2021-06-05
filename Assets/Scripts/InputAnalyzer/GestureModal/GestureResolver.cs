@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Leap.Unity;
+using Leap;
 using Leap.Unity.Attributes;
 using UnityEngine;
 
@@ -38,6 +38,7 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
     public SignalDatabase Database;
     private Dictionary<Gesture, string> GestureDict;
     bool statement;
+    Controller Controller;
 
     /*ExtendedFingerState thumbExt = new ExtendedFingerState(
         new PointingState[]{
@@ -64,7 +65,7 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
         GestureDict = Database.GetGestureDictionary();
         ResolveSignalSenders();
         ResolverJob = GestureResolverJob();
-
+        Controller = new Controller();
     }
 
     private void OnEnable()
@@ -80,6 +81,8 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
 
     private List<UnifiedStructure> Resolve(Gesture gesture)
     {
+        Device device = Controller.Devices[0];
+        LoggerUtil.Log(DebugTag, String.Format("Smudged: {0}\nBad Lighting: {1}", device.IsSmudged, device.IsLightingBad));
 
         if (gesture == null)
         {
@@ -110,7 +113,7 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
             statement = (gesture.ExtendedFingerState.Equals(entry.Key.ExtendedFingerState)) ? true : false;
             if (statement == true)
             {
-                float confidence = ResolveConfidence(gesture, entry.Key);
+                float confidence = ResolveConfidence(gesture, entry.Key) * 0.6f;
                 results.Add(new UnifiedStructure(SignalSourceId, time, entry.Value, confidence, time + threshold));
                 if (DebugMatchingProcess)
                 {

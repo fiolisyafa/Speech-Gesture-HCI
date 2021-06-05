@@ -69,7 +69,6 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
 
     private List<UnifiedStructure> Resolve(Speech speech)
     {
-
         if (speech == null)
             return null;
             
@@ -77,8 +76,10 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
         {
             string semantic = SpeechDict[speech];
             float timeStamp = Time.time;
-            double environmentWeight = speechInput.currentEnvironment.weight;
-            var item = new UnifiedStructure(SignalSourceId, timeStamp, semantic, speech.Confidence, timeStamp + threshold, environmentWeight);
+            float environmentWeight = speechInput.currentEnvironment.weight;
+            float confidence = speech.Confidence * environmentWeight;
+            var item = new UnifiedStructure(SignalSourceId, timeStamp, semantic, confidence, timeStamp + threshold);
+            LoggerUtil.Log(DebugTag, "env weight: " + environmentWeight);
             return new List<UnifiedStructure> { item }; //TODO: definetely bad performance
         }
         else

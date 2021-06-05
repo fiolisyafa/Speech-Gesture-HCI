@@ -8,9 +8,9 @@ using System.Linq;
 public struct Environment {
     public string name;
     public System.Func<float, bool> passes;
-    public double weight;
+    public float weight;
 
-    public Environment(string n, System.Func<float, bool> p, double w) {
+    public Environment(string n, System.Func<float, bool> p, float w) {
         name = n;
         passes = p;
         weight = w;
@@ -36,9 +36,9 @@ public class SpeechInput : MonoBehaviour
     //private List<float> dblist = new List<float>();
     private List<string> deviceOptions = new List<string>();
     private Environment[] environments = new Environment[3]{
-        new Environment("normal", (n) => n <= 60, 1),
-        new Environment("moderate", (n) => n > 60 && n < 70, 0.6),
-        new Environment("extreme", (n) => n >= 70, 0.3)
+        new Environment("normal", (n) => n <= 60, 1f),
+        new Environment("moderate", (n) => n > 60 && n < 70, 0.6f),
+        new Environment("extreme", (n) => n >= 70, 0.3f)
     };
 
     //DictationRecognizer dictationRecognizer;

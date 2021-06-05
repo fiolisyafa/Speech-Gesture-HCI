@@ -45,6 +45,9 @@ public class GestureWatcher : Detector, ISignalSender<Gesture>
                     ExtendedFingerState efs = EfsComponent.Resolve(hand);
                     PalmDirection pd = PdComponent.Resolve(hand);
 
+                    // LoggerUtil.Log(DebugTag, pd.ToString());
+                    // LoggerUtil.Log(DebugTag, efs.ToString());
+
                     //TODO: separation of concern between weight and type data?
                     g = new Gesture(extendedFingerState: efs, palmDirection: pd);
                     if (DebugResult)
