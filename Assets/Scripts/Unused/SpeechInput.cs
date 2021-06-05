@@ -5,13 +5,15 @@ using UnityEngine.Audio;
 using UnityEngine.Windows.Speech;
 using System.Linq;
 
-struct Environment {
+public struct Environment {
     public string name;
     public System.Func<float, bool> passes;
+    public double weight;
 
-    public Environment(string n, System.Func<float, bool> p) {
+    public Environment(string n, System.Func<float, bool> p, double w) {
         name = n;
         passes = p;
+        weight = w;
     }
 }
 
@@ -20,6 +22,7 @@ public class SpeechInput : MonoBehaviour
     //todo make private, but exposed to the editor, tricky wayaroundusing_ 
 	public AudioSource audioSource;
 	public AudioMixerGroup mixerGroup;
+    public Environment currentEnvironment;
     //public SpeechWatcher sw;
     //bool endWatch;
     float counter; // for timer
@@ -33,9 +36,9 @@ public class SpeechInput : MonoBehaviour
     //private List<float> dblist = new List<float>();
     private List<string> deviceOptions = new List<string>();
     private Environment[] environments = new Environment[3]{
-        new Environment("normal", (n) => n <= 60),
-        new Environment("moderate", (n) => n > 60 && n < 70),
-        new Environment("extreme", (n) => n >= 70)
+        new Environment("normal", (n) => n <= 60, 1),
+        new Environment("moderate", (n) => n > 60 && n < 70, 0.6),
+        new Environment("extreme", (n) => n >= 70, 0.3)
     };
 
     //DictationRecognizer dictationRecognizer;
@@ -54,6 +57,9 @@ public class SpeechInput : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        // Initialize environment to prevent null environment
+        currentEnvironment = environments[0];
+        
         //dictationRecognizer = new DictationRecognizer();
         //dictationRecognizer.InitialSilenceTimeoutSeconds = 30f;
         if (audioSource == null) {
@@ -122,14 +128,17 @@ public class SpeechInput : MonoBehaviour
         decibelValue = 20 * Mathf.Log10(rmsValue / defaultRms);
         if(decibelValue < -160) decibelValue = -160; //to prevent results with infinity as value
         if(decibelValue != -160){
-            string msg = "env. volume: " + decibelValue.ToString("0.00") + "dB\nenvironment: ";
             foreach (var environment in environments) {
                 if (environment.passes(decibelValue)) {
-                    msg += environment.name;
+                    currentEnvironment = environment;
                     break;
                 }
             }
-            Debug.Log(msg);
+            // string message = string.Format("env. volume: {0}dB\nenvironment: {1}",
+            //     decibelValue.ToString("0.00"),
+            //     currentEnvironment.name
+            // );
+            // Debug.Log(message);
         }
     }
 }

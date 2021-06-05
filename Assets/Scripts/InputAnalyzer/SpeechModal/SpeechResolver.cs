@@ -26,6 +26,7 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
     private Queue<Speech> SpeechStates = new Queue<Speech>();
     private List<UnifiedStructure> LatestSignal;
     private event Action<List<UnifiedStructure>> OnSignal;
+    private SpeechInput speechInput;
 
     IEnumerator ResolverJob;
     public SignalDatabase Database;
@@ -34,6 +35,8 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
 
     private void Awake()
     {
+        this.speechInput = GameObject.FindObjectOfType<SpeechInput>();
+
         SpeechDict = Database.GetSpeechDictionary();
         SpeechWatcher = GetComponents<ISignalSender<Speech>>()[0] as ISignalSender<Speech>;
 
@@ -74,7 +77,8 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
         {
             string semantic = SpeechDict[speech];
             float timeStamp = Time.time;
-            var item = new UnifiedStructure(SignalSourceId, timeStamp, semantic, speech.Confidence, timeStamp + threshold);
+            double environmentWeight = speechInput.currentEnvironment.weight;
+            var item = new UnifiedStructure(SignalSourceId, timeStamp, semantic, speech.Confidence, timeStamp + threshold, environmentWeight);
             return new List<UnifiedStructure> { item }; //TODO: definetely bad performance
         }
         else
