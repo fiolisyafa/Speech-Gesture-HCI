@@ -17,6 +17,7 @@ public class ExtendedFingerState : ISignal
     {
         this.State = data.State;
     }
+    
     //TODO: can reuse ToString encoding
     public override bool Equals(object obj)
     {

@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -14,5 +15,7 @@ MonoBehaviour:
   ExtendedFingerState: {fileID: 11400000, guid: 5f100897bb406a74b8ce5d6b966ff2e8,
     type: 2}
   ExtendedFingerStateWeight: 0.3
-  PalmDirection: {fileID: 11400000, guid: 7826afbb59ead3b48a9922c9631b8d58, type: 2}
-  PalmDirectionWeight: 0.7
+  PalmDirection: {fileID: 11400000, guid: de77ae7cfd1644045aa2385a788d3c7f, type: 2}
+  PalmDirectionWeight: 0.3
+  FingerDirection: {fileID: 11400000, guid: 3fa9ab2c2044e1a4590ea12402146231, type: 2}
+  FingerDirectionWeight: 0.3

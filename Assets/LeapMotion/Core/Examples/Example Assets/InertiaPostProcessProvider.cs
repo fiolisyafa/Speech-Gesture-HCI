@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using Leap.Unity.Query;
@@ -127,17 +126,17 @@ namespace Leap.Unity.Examples {
     private void integratePose(ref Pose curPose, ref Pose prevPose,
                                Pose targetPose, float deltaTime) {
       // Calculate motion from prevPose to curPose.
-      var deltaPose = curPose.inverse * prevPose; // prevPose in curPose's local space.
+      var deltaPose = curPose.inverse().mul(prevPose); // prevPose in curPose's local space.
       deltaPose = new Pose(-deltaPose.position, Quaternion.Inverse(deltaPose.rotation));
-      deltaPose = Pose.Lerp(deltaPose, Pose.identity, damping * deltaTime); // Dampen.
+      deltaPose = deltaPose.Lerp(Pose.identity, damping * deltaTime); // Dampen.
 
       // Verlet-integrate curPose based on the delta from prevPose.
       Pose tempPose = curPose;
-      curPose = curPose * deltaPose;
+      curPose = curPose.mul(deltaPose);
       prevPose = tempPose;
 
       // Pull the integrated hand toward the target a little bit based on stiffness.
-      curPose = Pose.Lerp(curPose, targetPose, stiffness * deltaTime);
+      curPose = curPose.Lerp(targetPose, stiffness * deltaTime);
     }
   }
 }

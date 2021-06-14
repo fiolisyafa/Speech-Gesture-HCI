@@ -1,14 +1,14 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using AOT;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -32,7 +32,7 @@ namespace LeapInternal {
     /// you are working with is being overwritten, consider making a copy,
     /// or turning up the MinPoolSize.
     /// </summary>
-    public static bool EnablePooling = false;
+    public static bool EnablePooling = true;
 
     /// <summary>
     /// Specifies how many objects of a specific type need to be in the pool
@@ -41,10 +41,12 @@ namespace LeapInternal {
     /// overwritten with new objects.  Turning this number down can reduce
     /// the total memory footprint used by the memory manager.
     /// </summary>
-    public static uint MinPoolSize = 8;
+    public static uint MinPoolSize = 64;
 
-    private static Dictionary<IntPtr, ActiveMemoryInfo> _activeMemory = new Dictionary<IntPtr, ActiveMemoryInfo>();
-    private static Dictionary<PoolKey, Queue<object>> _pooledMemory = new Dictionary<PoolKey, Queue<object>>();
+    private static ConcurrentDictionary<IntPtr, ActiveMemoryInfo> _activeMemory =
+      new ConcurrentDictionary<IntPtr, ActiveMemoryInfo>();
+    private static ConcurrentDictionary<PoolKey, Queue<object>> _pooledMemory =
+      new ConcurrentDictionary<PoolKey, Queue<object>>();
 
     [MonoPInvokeCallback(typeof(Allocate))]
     public static IntPtr Pin(UInt32 size, eLeapAllocatorType typeHint, IntPtr state) {
@@ -86,7 +88,7 @@ namespace LeapInternal {
 
         //Put the information about the newly pinned allocation into the
         //active memory map so it can be retrieved and freed layer.
-        _activeMemory.Add(ptr, new ActiveMemoryInfo() {
+        _activeMemory.TryAdd(ptr, new ActiveMemoryInfo() {
           handle = handle,
           key = key
         });
@@ -106,10 +108,14 @@ namespace LeapInternal {
         ActiveMemoryInfo info = _activeMemory[ptr];
 
         //First we return the object back to its pool
-        _pooledMemory[info.key].Enqueue(info.handle.Target);
+        if (EnablePooling) {
+          _pooledMemory[info.key].Enqueue(info.handle.Target);
+        }
 
         //Then we remove the pointer from the active memory map
-        _activeMemory.Remove(ptr);
+        ActiveMemoryInfo value;
+
+        _activeMemory.TryRemove(ptr, out value);
 
         //Finally we unpin the memory
         info.handle.Free();

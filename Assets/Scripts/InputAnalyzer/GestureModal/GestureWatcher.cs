@@ -24,6 +24,7 @@ public class GestureWatcher : Detector, ISignalSender<Gesture>
 
     public ExtendedFingerStateWatcherComponent EfsComponent;
     public PalmDirectionWatcherComponent PdComponent;
+    public FingerDirectionWatcherComponent FdComponent;
     
 
     void Awake()
@@ -44,12 +45,14 @@ public class GestureWatcher : Detector, ISignalSender<Gesture>
                 {
                     ExtendedFingerState efs = EfsComponent.Resolve(hand);
                     PalmDirection pd = PdComponent.Resolve(hand);
+                    FingerDirection fd = FdComponent.Resolve(hand);
 
                     // LoggerUtil.Log(DebugTag, pd.ToString());
                     // LoggerUtil.Log(DebugTag, efs.ToString());
+                    // LoggerUtil.Log(DebugTag, fd.ToString());
 
                     //TODO: separation of concern between weight and type data?
-                    g = new Gesture(extendedFingerState: efs, palmDirection: pd);
+                    g = new Gesture(extendedFingerState: efs, palmDirection: pd, fingerDirection: fd);
                     if (DebugResult)
                     {
                         LoggerUtil.Log(DebugTag, "gesture: " + g.ToString());
@@ -79,8 +82,9 @@ public class GestureWatcher : Detector, ISignalSender<Gesture>
     {
         EfsComponent = GetComponents<ExtendedFingerStateWatcherComponent>()[0];
         PdComponent = GetComponents<PalmDirectionWatcherComponent>()[0];
+        FdComponent = GetComponents<FingerDirectionWatcherComponent>()[0];
 
-        if (EfsComponent == null || PdComponent == null)
+        if (EfsComponent == null || PdComponent == null || FdComponent == null)
         {
             Debug.LogError("cannot start gesture watcher with incomplete watcher components");
         }

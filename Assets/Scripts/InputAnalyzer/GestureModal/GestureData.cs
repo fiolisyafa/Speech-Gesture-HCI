@@ -16,4 +16,6 @@ public class GestureData : ScriptableObject, ISignal
     public float ExtendedFingerStateWeight;
     public PalmDirectionData PalmDirection;
     public float PalmDirectionWeight;
+    public FingerDirectionData FingerDirection;
+    public float FingerDirectionWeight;
 }

@@ -13,6 +13,7 @@ public class ExtendedFingerStateWatcherComponent : MonoBehaviour
         for (int f = 0; f < fingerCount; f++)
         {
             Finger finger = hand.Fingers[f];
+            // if (f == 0) Debug.Log("Finger Direction:" + finger.Direction);
             if (finger.IsExtended)
             {
                 fingersState[f] = PointingState.Extended;

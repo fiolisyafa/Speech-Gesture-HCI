@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using UnityEngine;
@@ -54,5 +53,8 @@ namespace Leap.Unity {
     public int IndexOf(T item) {
       return _list.IndexOf(item);
     }
+
+    /// <summary> Converts the ReadonlyList{T} reference back to a List{T}. Useful to use extension methods that accept Lists but not ReadonlyLists, but be careful, this makes the underlying data writeable again and could go against the grain of another author's API. Intended to allow calling Query() ops on APIs that expose ReadonlyLists instead of Lists. </summary>
+    public List<T> asList { get { return _list; } }
   }
 }

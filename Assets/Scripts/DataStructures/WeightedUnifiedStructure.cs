@@ -7,11 +7,11 @@ public class WeightedUnifiedStructure : ISignal
     public float Weight;
     public float WeightedConfidence;
 
-    public WeightedUnifiedStructure(UnifiedStructure data, float weight, float confidence)
+    public WeightedUnifiedStructure(UnifiedStructure data, float weight, float confidence, float weightedConfidence)
     {
         this.Data = data;
         this.Weight = weight;
-        this.WeightedConfidence = confidence * weight;
+        this.WeightedConfidence = weightedConfidence;
     }
 
     public override string ToString()

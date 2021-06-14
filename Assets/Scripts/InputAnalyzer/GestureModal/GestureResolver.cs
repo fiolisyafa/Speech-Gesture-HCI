@@ -38,7 +38,14 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
     public SignalDatabase Database;
     private Dictionary<Gesture, string> GestureDict;
     bool statement;
-    Controller Controller;
+    private Controller Controller;
+    private Device Device;
+    private GestureEnvironment environment;
+    private GestureEnvironment[] environments = new GestureEnvironment[3]{
+        new GestureEnvironment("normal", 1f, (s, l) => !s && !l),
+        new GestureEnvironment("moderate", 0.6f, (s, l) => s || l),
+        new GestureEnvironment("extreme", 0.3f, (s, l) => s && l)
+    };
 
     /*ExtendedFingerState thumbExt = new ExtendedFingerState(
         new PointingState[]{
@@ -81,8 +88,9 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
 
     private List<UnifiedStructure> Resolve(Gesture gesture)
     {
-        Device device = Controller.Devices[0];
-        LoggerUtil.Log(DebugTag, String.Format("Smudged: {0}\nBad Lighting: {1}", device.IsSmudged, device.IsLightingBad));
+        if (Controller.Devices.Count > 0 && Device == null) {
+            Device = Controller.Devices[0];
+        }
 
         if (gesture == null)
         {
@@ -101,6 +109,14 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
             return null;
         }
 
+        foreach (GestureEnvironment environment in environments)
+        {
+            if (environment.passes(Device.IsSmudged, Device.IsLightingBad)) {
+                this.environment = environment;
+                break;
+            }
+        }
+
         float currentTime = Time.time;
 
         float time = Time.time;
@@ -110,10 +126,13 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
 
         foreach (KeyValuePair<Gesture, string> entry in GestureDict)
         {
-            statement = (gesture.ExtendedFingerState.Equals(entry.Key.ExtendedFingerState)) ? true : false;
-            if (statement == true)
+            bool extendedFingerPresent = (gesture.ExtendedFingerState.Equals(entry.Key.ExtendedFingerState)) ? true : false;
+            bool fingerDirectionPresent = gesture.FingerDirection != null
+                ? gesture.FingerDirection.Equals(entry.Key.FingerDirection)
+                : false;
+            if (extendedFingerPresent && fingerDirectionPresent)
             {
-                float confidence = ResolveConfidence(gesture, entry.Key) * 0.6f;
+                float confidence = ResolveConfidence(gesture, entry.Key) * this.environment.weight;
                 results.Add(new UnifiedStructure(SignalSourceId, time, entry.Value, confidence, time + threshold));
                 if (DebugMatchingProcess)
                 {
@@ -165,7 +184,8 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
         {
             var efs = item.Key.ExtendedFingerState;
             var pd = item.Key.PalmDirection;
-            if(g.PalmDirection.Equals(pd) && g.ExtendedFingerState.Equals(efs))
+            var fd = item.Key.FingerDirection;
+            if(g.PalmDirection.Equals(pd) && g.ExtendedFingerState.Equals(efs) && g.FingerDirection.Equals(fd))
             {
                var largerConfidence = list.Aggregate((x, y) => x.SemanticMeaning.Equals(item.Value) ? x : y);
                msg += largerConfidence.SemanticMeaning + " | confidence: " + largerConfidence.ConfidenceLevel.ToString();
@@ -194,6 +214,15 @@ public class GestureResolver : MonoBehaviour, IModal, ISignalReceiver
         {
             confidence += databaseEntry.PalmDirectionWeight;
             message += "from pds: " + confidence;
+        }
+
+        Debug.Log(input);
+        Debug.Log(databaseEntry);
+
+        if (input.FingerDirection.Equals(databaseEntry.FingerDirection))
+        {
+            confidence += databaseEntry.FingerDirectionWeight;
+            message += "from fd: " + confidence;
         }
 
         if (DebugMatchingProcess)

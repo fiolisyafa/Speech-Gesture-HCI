@@ -54,9 +54,21 @@ public class WeightResolver : MonoBehaviour, ISignalReceiver, ISignalSender<List
         }
 
         List<WeightedUnifiedStructure> weightedList = new List<WeightedUnifiedStructure>();
-        foreach (UnifiedStructure item in list)
-        {
-            weightedList.Add(new WeightedUnifiedStructure(item, item.ConfidenceLevel * weightConstant, item.ConfidenceLevel));
+        if (list.Count > 1) {
+            foreach (UnifiedStructure item in list)
+            {
+                float weight = item.ConfidenceLevel * weightConstant;
+                float confidence = item.ConfidenceLevel;
+                weightedList.Add(new WeightedUnifiedStructure(item, weight, confidence, weight * confidence));
+            }
+        } else {
+            UnifiedStructure item = list[0];
+            float weight = item.ConfidenceLevel * weightConstant;
+            float confidence = item.ConfidenceLevel;
+            weightedList = new List<WeightedUnifiedStructure> {
+                // Use initial confidence as weighted confidence if only one modal is present
+                new WeightedUnifiedStructure(item, weight, confidence, confidence)
+            };
         }
 
         if (DebugResult)

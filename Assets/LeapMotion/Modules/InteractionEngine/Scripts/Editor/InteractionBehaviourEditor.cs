@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using Leap.Unity.Query;
@@ -48,7 +47,7 @@ namespace Leap.Unity.Interaction {
     private void drawInteractionManagerDecorator(SerializedProperty property) {
       bool shouldDrawInteractionManagerNotSetWarning = false;
       foreach (var target in targets) {
-        if (PrefabUtility.GetPrefabType(target) == PrefabType.Prefab) continue;
+        if (Utils.IsObjectPartOfPrefabAsset(target)) continue;
 
         if (target.manager == null) {
           shouldDrawInteractionManagerNotSetWarning = true;
@@ -95,7 +94,7 @@ namespace Leap.Unity.Interaction {
         }
         else {
           foreach (var target in targets) {
-            if (PrefabUtility.GetPrefabType(target) == PrefabType.Prefab) continue;
+            if (Utils.IsObjectPartOfPrefabAsset(target)) continue;
 
             Undo.RecordObject(target, "Auto-set Interaction Manager");
             target.manager = manager;

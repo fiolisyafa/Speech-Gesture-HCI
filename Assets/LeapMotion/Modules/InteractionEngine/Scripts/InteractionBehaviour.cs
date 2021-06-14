@@ -1,13 +1,12 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
-using InteractionEngineUtility;
+using Leap.Interaction.Internal.InteractionEngineUtility;
 using Leap.Unity.Attributes;
 using Leap.Unity.Interaction.Internal;
 using Leap.Unity.Query;
@@ -533,6 +532,35 @@ namespace Leap.Unity.Interaction {
     public void AddAngularAcceleration(Vector3 acceleration) {
       _appliedForces = true;
       _accumulatedAngularAcceleration += acceleration;
+    }
+
+    #endregion
+
+    #region General API
+
+    /// <summary> Use this if you want to modify the isKinematic state of an
+    /// interaction object while it is grasped; otherwise the object's grasp
+    /// settings may return the Rigidbody to the kinematic state of the object
+    /// from right before it was grasped. </summary>
+    public void SetKinematicWithoutGrasp(bool isKinematic) {
+      if (this.isGrasped) {
+        _wasKinematicBeforeGrasp = isKinematic;
+      }
+      else {
+        _rigidbody.isKinematic = isKinematic;
+      }
+    }
+
+    /// <summary> Use this to retrieve the isKinematic state of the interactino
+    /// object ignoring any temporary modification to isKinematic that may be
+    /// due to the object being grasped. </summary>
+    public bool GetKinematicWithoutGrasp() {
+      if (this.isGrasped) {
+        return _wasKinematicBeforeGrasp;
+      }
+      else {
+        return _rigidbody.isKinematic;
+      }
     }
 
     #endregion
@@ -1279,9 +1307,18 @@ namespace Leap.Unity.Interaction {
         // Fire interaction callback.
         OnPerControllerGraspEnd(controller);
 
-        if (moveObjectWhenGrasped) {
+        if (moveObjectWhenGrasped && manager.multiGraspHoldingMode == InteractionManager.MultiGraspHoldingMode.PreservePosePerController) {
           // Remove each hand from the pose solver.
           graspedPoseHandler.RemoveController(controller);
+        }
+      }
+      
+      // Possibly re-initialize the graspedPoseHandler.
+      if (moveObjectWhenGrasped && manager.multiGraspHoldingMode == InteractionManager.MultiGraspHoldingMode.ReinitializeOnAnyRelease) {
+        graspedPoseHandler.ClearControllers();
+
+        foreach (var item in _graspingControllers) {
+          graspedPoseHandler.AddController(item);
         }
       }
 

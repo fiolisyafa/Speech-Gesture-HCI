@@ -1,13 +1,12 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
-using InteractionEngineUtility;
+using Leap.Interaction.Internal.InteractionEngineUtility;
 using Leap.Unity.Space;
 using Leap.Unity.Interaction.Internal;
 using System;
@@ -210,6 +209,11 @@ namespace Leap.Unity.Interaction {
     /// Called when the InteractionController releases an object.
     /// </summary>
     public Action OnGraspEnd = () => { };
+
+    /// <summary>
+    /// Called when contact data is initialized.
+    /// </summary>
+    public Action<InteractionController> OnContactInitialized = (intCtrl) => { };
 
     #endregion
 
@@ -957,6 +961,7 @@ namespace Leap.Unity.Interaction {
         if (initContact()) {
           finishInitContact();
           _contactInitialized = true;
+          if (OnContactInitialized != null) OnContactInitialized(this);
         }
         else {
           return;
@@ -2004,7 +2009,7 @@ namespace Leap.Unity.Interaction {
     /// </summary>
     bool IInternalInteractionController.CheckGraspHold(out IInteractionBehaviour graspedObject) {
       graspedObject = _graspedObject;
-      OnGraspStay();
+      if (graspedObject != null) OnGraspStay();
       return graspedObject != null;
     }
 

@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using System.Collections;
@@ -18,6 +17,7 @@ namespace Leap.Unity.Examples {
   public class SimpleFacingCameraCallbacks : MonoBehaviour {
 
     public Transform toFaceCamera;
+    public Camera cameraToFace;
 
     private bool _initialized = false;
     private bool _isFacingCamera = false;
@@ -30,9 +30,10 @@ namespace Leap.Unity.Examples {
     }
 
     private void initialize() {
+      if(cameraToFace == null) { cameraToFace = Camera.main; }
       // Set "_isFacingCamera" to be whatever the current state ISN'T, so that we are
       // guaranteed to fire a UnityEvent on the first initialized Update().
-      _isFacingCamera = !GetIsFacingCamera(toFaceCamera, Camera.main);
+      _isFacingCamera = !GetIsFacingCamera(toFaceCamera, cameraToFace);
       _initialized = true;
     }
 
@@ -42,7 +43,7 @@ namespace Leap.Unity.Examples {
       }
       if (!_initialized) return;
 
-      if (GetIsFacingCamera(toFaceCamera, Camera.main, _isFacingCamera ? 0.77F : 0.82F) != _isFacingCamera) {
+      if (GetIsFacingCamera(toFaceCamera, cameraToFace, _isFacingCamera ? 0.77F : 0.82F) != _isFacingCamera) {
         _isFacingCamera = !_isFacingCamera;
 
         if (_isFacingCamera) {

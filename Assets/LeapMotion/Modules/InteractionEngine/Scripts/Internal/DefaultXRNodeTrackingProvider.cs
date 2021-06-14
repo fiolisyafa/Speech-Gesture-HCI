@@ -1,15 +1,12 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_2017_2_OR_NEWER
@@ -55,8 +52,8 @@ namespace Leap.Unity.Interaction {
     void updateTrackingData() {
       if (_isXRNodeSet) {
 
-        var position = InputTracking.GetLocalPosition(xrNode);
-        var rotation = InputTracking.GetLocalRotation(xrNode);
+        var position = XRSupportUtil.GetXRNodeLocalPosition((int)xrNode);
+        var rotation = XRSupportUtil.GetXRNodeLocalRotation((int)xrNode);
 
         // Unfortunately, the only alternative to checking the controller's position and
         // rotation for whether or not it is tracked is to request an allocated string

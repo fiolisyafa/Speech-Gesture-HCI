@@ -3,16 +3,19 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 66c246d3a5436b147969c857abc4b4df, type: 3}
   m_Name: pointLeft
   m_EditorClassIdentifier: 
-  ExtendedFingerState: {fileID: 11400000, guid: 72f61bb7bf35ff54da5e6404c71877f1,
+  ExtendedFingerState: {fileID: 11400000, guid: 5f100897bb406a74b8ce5d6b966ff2e8,
     type: 2}
-  ExtendedFingerStateWeight: 0.6
-  PalmDirection: {fileID: 11400000, guid: 63b2e80dd66450f489884055d7179b64, type: 2}
-  PalmDirectionWeight: 0.4
+  ExtendedFingerStateWeight: 0.3
+  PalmDirection: {fileID: 11400000, guid: 806e8630c33b5c946ab82e822351007d, type: 2}
+  PalmDirectionWeight: 0.3
+  FingerDirection: {fileID: 11400000, guid: 5a07679b840795248a90150fdf6fce05, type: 2}
+  FingerDirectionWeight: 0.3

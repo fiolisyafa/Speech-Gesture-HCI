@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace Leap.Unity.Interaction.Examples {
     private Pose _selfToTargetPose = Pose.identity;
 
     private void OnEnable() {
-      _selfToTargetPose = this.transform.ToPose().inverse * target.transform.ToPose();
+      _selfToTargetPose = this.transform.ToPose().inverse().mul(target.transform.ToPose());
     }
 
     private void Start() {
@@ -33,7 +32,7 @@ namespace Leap.Unity.Interaction.Examples {
     }
 
     private void Update() {
-      target.transform.SetPose(this.transform.ToPose() * _selfToTargetPose);
+      target.transform.SetPose(this.transform.ToPose().mul(_selfToTargetPose));
     }
 
   }

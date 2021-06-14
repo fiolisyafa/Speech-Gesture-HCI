@@ -11,12 +11,16 @@ public class Gesture : ISignal
     public float ExtendedFingerStateWeight;
     public PalmDirection PalmDirection;
     public float PalmDirectionWeight;
+    public FingerDirection FingerDirection;
+    public float FingerDirectionWeight;
     //TODO: guard value more than 1
     public Gesture(
         ExtendedFingerState extendedFingerState = null,
         float extendedFingerStateWeight = 0f,
         PalmDirection palmDirection = null,
-        float palmDirectionWeight = 0f
+        float palmDirectionWeight = 0f,
+        FingerDirection fingerDirection = null,
+        float fingerDirectionWeight = 0f
         )
     {
         this.ExtendedFingerState = extendedFingerState;
@@ -24,6 +28,9 @@ public class Gesture : ISignal
 
         this.PalmDirection = palmDirection;
         this.PalmDirectionWeight = palmDirectionWeight;
+        
+        this.FingerDirection = fingerDirection;
+        this.FingerDirectionWeight = fingerDirectionWeight;
     }
 
     public Gesture(GestureData data)
@@ -32,6 +39,8 @@ public class Gesture : ISignal
         this.ExtendedFingerStateWeight = data.ExtendedFingerStateWeight;
         this.PalmDirection = new PalmDirection(data.PalmDirection);
         this.PalmDirectionWeight = data.PalmDirectionWeight;
+        this.FingerDirection = new FingerDirection(data.FingerDirection);
+        this.FingerDirectionWeight = data.FingerDirectionWeight;
     }
     public override bool Equals(object obj)
     {
@@ -39,13 +48,27 @@ public class Gesture : ISignal
 
         Gesture g = obj as Gesture;
 
-        string equalsInfo = "self: " + ExtendedFingerState.ToString() + " and " + PalmDirection.ToString() + "\n" +
-        "other: " + g.ExtendedFingerState.ToString() + " and " + g.PalmDirection.ToString();
+        string equalsInfo = String.Format(
+            "self: {0} and {1} and {2}\nother: {3} and {4} and {5}",
+            ExtendedFingerState,
+            PalmDirection,
+            FingerDirection,
+            g.ExtendedFingerState,
+            g.PalmDirection,
+            g.FingerDirection
+        );
+
         bool efs = this.ExtendedFingerState.Equals(g.ExtendedFingerState);
         bool pds = this.PalmDirection.Equals(g.PalmDirection);
+        bool fd = this.FingerDirection.Equals(g.FingerDirection);
 
-        string msg = "equals: " + equalsInfo + "\n" +
-        "efs: " + efs.ToString() + "; pds: " + pds.ToString();
+        string msg = String.Format(
+            "equals: {0}\nefs: {1}\npds: {2}\n:fd {3}",
+            equalsInfo,
+            efs,
+            pds,
+            fd
+        );
 
         LoggerUtil.TmpDebug("gesture", msg);
 
@@ -58,13 +81,25 @@ public class Gesture : ISignal
 
         Gesture g = obj as Gesture;
 
-        string equalsInfo = "self: " + ExtendedFingerState.ToString() + " and " + PalmDirection.ToString() + "\n" +
-        "other: " + g.ExtendedFingerState.ToString() + " and " + g.PalmDirection.ToString();
+        string equalsInfo = String.Format(
+            "self: {0} and {1} and {2}\nother: {3} and {4} and {5}",
+            ExtendedFingerState,
+            PalmDirection,
+            FingerDirection,
+            g.ExtendedFingerState,
+            g.PalmDirection,
+            g.FingerDirection
+        );
         bool efs = compareIfNotNullOrTrue(this.ExtendedFingerState, g.ExtendedFingerState);
         bool pds = compareIfNotNullOrTrue(this.PalmDirection, g.PalmDirection);
+        bool fd = compareIfNotNullOrTrue(this.FingerDirection, g.FingerDirection);
 
-        string msg = "lenient equals: " + equalsInfo + "\n" +
-        "efs: " + efs.ToString() + "; pds: " + pds.ToString();
+        string msg = String.Format(
+            "equals: {0}\nefs: {1}\npds: {2}\n:fd {3}",
+            efs,
+            pds,
+            fd
+        );
 
         LoggerUtil.TmpDebug("gesture", msg);
 
@@ -85,6 +120,12 @@ public class Gesture : ISignal
         {
             hashCode += PalmDirection.GetHashCode();
         }
+
+        if (FingerDirection != null)
+        {
+            hashCode += FingerDirection.GetHashCode();
+        }
+
         return hashCode;
     }
 
@@ -102,11 +143,15 @@ public class Gesture : ISignal
 
     public override string ToString()
     {
-        return
-        "efs:" + ToStringIfNotNull(ExtendedFingerState) + "\n" +
-        "efs weight: " + ExtendedFingerStateWeight + "\n" +
-        "pds:\n" + ToStringIfNotNull(PalmDirection) + "\n" +
-        "pds weight: " + PalmDirectionWeight;
+        return String.Format(
+            "efs: {0}\nefs weight: {1}\npds: {2}\npds weight: {3}\nfd: {4}\nfd weight: {5}",
+            ToStringIfNotNull(ExtendedFingerState),
+            ExtendedFingerStateWeight,
+            ToStringIfNotNull(PalmDirection),
+            PalmDirectionWeight,
+            ToStringIfNotNull(FingerDirection),
+            FingerDirectionWeight
+        );
     }
 
     private string ToStringIfNotNull(ISignal signal)

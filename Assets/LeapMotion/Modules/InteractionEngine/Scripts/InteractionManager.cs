@@ -1,17 +1,14 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
-using InteractionEngineUtility;
+using Leap.Interaction.Internal.InteractionEngineUtility;
 using Leap.Unity.Attributes;
 using Leap.Unity.RuntimeGizmos;
-using Leap.Unity.Query;
-using Leap.Unity.Interaction.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,6 +56,13 @@ namespace Leap.Unity.Interaction {
            + "Interaction Manager with unit scale underneath your 'Player' Transform if "
            + "you expect your player's hands or controllers to ever have non-unit scale.")]
     public float touchActivationRadius = 0.075F;
+
+    public enum MultiGraspHoldingMode {
+      PreservePosePerController,
+      ReinitializeOnAnyRelease
+    }
+    [Tooltip("If set to PreservePosePerController, when holding a multi-grasp-enabled object and releasing with a single hand or controller, the object's held pose will adjust to reflect only the remaining holding controllers.\n\nIf set to PreservePosePerController, when any hand or controller releases an object, the remaining controllers will reinitialize their holding pose to match the last-held state of the object, allowing the user to rotate and translate the object more loosely.\n\nPreservePosePerController is the default setting.")]
+    public MultiGraspHoldingMode multiGraspHoldingMode = MultiGraspHoldingMode.PreservePosePerController;
 
     [Header("Layer Settings")]
     [Tooltip("Whether or not to create the layers used for interaction when the scene "

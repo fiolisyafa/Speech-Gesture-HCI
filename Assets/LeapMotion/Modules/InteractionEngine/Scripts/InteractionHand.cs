@@ -1,13 +1,12 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
-using InteractionEngineUtility;
+using Leap.Interaction.Internal.InteractionEngineUtility;
 using Leap.Unity.Interaction.Internal;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity.Space;
@@ -105,6 +104,9 @@ namespace Leap.Unity.Interaction {
     /// </summary>
     private Hand _hand;
 
+
+
+    public Transform headTransform;
     #endregion
 
     #region Unity Events
@@ -721,7 +723,8 @@ namespace Leap.Unity.Interaction {
     }
 
     protected override void fixedUpdateGraspingState() {
-      grabClassifier.FixedUpdateClassifierHandState();
+      //Feed Camera Transform in for Projective Grabbing Hack (details inside)
+      grabClassifier.FixedUpdateClassifierHandState(headTransform);
     }
 
     protected override void onGraspedObjectForciblyReleased(IInteractionBehaviour objectToBeReleased) {

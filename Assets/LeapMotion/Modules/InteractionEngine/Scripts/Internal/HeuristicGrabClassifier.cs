@@ -1,14 +1,12 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
-using InteractionEngineUtility;
-using Leap.Unity.RuntimeGizmos;
+using Leap.Interaction.Internal.InteractionEngineUtility;
 using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
@@ -61,7 +59,7 @@ namespace Leap.Unity.Interaction.Internal {
         }
     }
 
-    public void FixedUpdateClassifierHandState() {
+    public void FixedUpdateClassifierHandState(Transform headTransform = null) {
       using (new ProfilerSample("Update Classifier Hand State")) {
         var hand = interactionHand.leapHand;
 
@@ -76,11 +74,23 @@ namespace Leap.Unity.Interaction.Internal {
 
           // Ensure layer mask is up-to-date.
           _scaledGrabParams.LAYER_MASK = interactionHand.manager.GetInteractionLayerMask();
-          
-          for (int i = 0; i < hand.Fingers.Count; i++) {
-            _fingerTipPositions[i] = hand.Fingers[i].TipPosition.ToVector3();
-            _fingerKnucklePositions[i] = hand.Fingers[i].Bone(Bone.BoneType.TYPE_METACARPAL).NextJoint.ToVector3();
-          }
+
+
+          /*if (headTransform != null) {
+            //SERIOUS HACKS: Have the collider for the grab classifier stretch along the camera's projective axis
+            //This will make it easier for users to grab far away objects (while being uncertain of their depth)
+            for (int i = 0; i < hand.Fingers.Count; i++) {
+              Vector3 fingerTipPosition = hand.Fingers[i].TipPosition.ToVector3();
+              Vector3 stretchDirection = (fingerTipPosition - headTransform.position) * 0.1f;
+              _fingerTipPositions[i] = fingerTipPosition + stretchDirection;
+              _fingerKnucklePositions[i] = fingerTipPosition - stretchDirection;
+            }
+          } else {*/
+            for (int i = 0; i < hand.Fingers.Count; i++) {
+              _fingerTipPositions[i] = hand.Fingers[i].TipPosition.ToVector3();
+              _fingerKnucklePositions[i] = hand.Fingers[i].Bone(Bone.BoneType.TYPE_METACARPAL).NextJoint.ToVector3();
+            }
+         // }
 
           GrabClassifierHeuristics.UpdateAllProbeColliders(_fingerTipPositions, _fingerKnucklePositions, ref _collidingCandidates, ref _numberOfColliders, _scaledGrabParams);
         }
@@ -202,6 +212,7 @@ namespace Leap.Unity.Interaction.Internal {
     }
 
     public bool TryGrasp(IInteractionBehaviour intObj, Hand hand) {
+      Debug.Log("HEY THIS SHOULDN'T BE BEING CALLED");
       FixedUpdateClassifierHandState();
 
       return updateBehaviour(intObj, hand, GraspUpdateMode.BeginGrasp,

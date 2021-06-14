@@ -1,10 +1,9 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and confidential.                                  *
+ * Copyright (C) Ultraleap, Inc. 2011-2020.                                   *
  *                                                                            *
- * Use subject to the terms of the Leap Motion SDK Agreement available at     *
- * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
- * between Leap Motion and you, your company or other organization.           *
+ * Use subject to the terms of the Apache License 2.0 available at            *
+ * http://www.apache.org/licenses/LICENSE-2.0, or another agreement           *
+ * between Ultraleap and you, your company or other organization.             *
  ******************************************************************************/
 
 using Leap.Unity.Attributes;
@@ -51,11 +50,13 @@ namespace Leap.Unity.Interaction {
     private string _deviceJoystickTokens = "oculus touch right"; // or, e.g., "openvr controller right"
     public string deviceJoystickTokens { get { return _deviceJoystickTokens; } }
 
+    #pragma warning disable 0649
     [Tooltip("Which hand will hold this controller? This property cannot be changed "
            + "at runtime.")]
     [SerializeField, EditTimeOnly]
     private Chirality _chirality;
     public Chirality chirality { get { return _chirality; } }
+    #pragma warning restore 0649
 
     [Tooltip("Whether to continuously poll attached joystick data for a joystick that "
            + "matches the device joystick tokens, using Input.GetJoystickNames(). This "
@@ -695,6 +696,7 @@ namespace Leap.Unity.Interaction {
     private bool _graspButtonDown = false;
     private bool _graspButtonUp = false;
     private float _graspButtonDownSlopTimer = 0F;
+    private bool _inputWarningDisplayed = false;
 
     public override Vector3 GetGraspPoint() {
       return graspPoint.transform.position;
@@ -730,7 +732,12 @@ namespace Leap.Unity.Interaction {
           try {
             graspButton = Input.GetAxis(graspButtonAxis) > graspDepressedValue;
           } catch {
-            Debug.LogError("INPUT AXIS NOT SET UP.  Go to your Input Manager and add a definition for " + graspButtonAxis + " on the " + (isLeft ? "9" : "10") + "th Joystick Axis.");
+            if (!_inputWarningDisplayed) {
+              Debug.LogWarning("VR CONTROLLER INPUT AXES ARE NOT SET UP.  Go to your Input Manager " +
+                "and add a definition for " + graspButtonAxis + " on the " + (isLeft ? "9" : "10") + "th " +
+                "Joystick Axis or disable this controller.", this);
+              _inputWarningDisplayed = true;
+            }
             graspButton = Input.GetKey(isLeft ? KeyCode.JoystickButton14: KeyCode.JoystickButton15);
           }
         }
@@ -755,7 +762,12 @@ namespace Leap.Unity.Interaction {
           try {
             graspButton = Input.GetAxis(graspButtonAxis) > graspDepressedValue;
           } catch {
-            Debug.LogError("INPUT AXIS NOT SET UP.  Go to your Input Manager and add a definition for " + graspButtonAxis + " on the " + (isLeft ? "9" : "10") + "th Joystick Axis.");
+            if (!_inputWarningDisplayed) {
+              Debug.LogWarning("VR CONTROLLER INPUT AXES ARE NOT SET UP.  Go to your Input Manager " +
+                "and add a definition for " + graspButtonAxis + " on the " + (isLeft ? "9" : "10") + "th " +
+                "Joystick Axis or disable this controller.", this);
+              _inputWarningDisplayed = true;
+            }
             graspButton = Input.GetKey(isLeft ? KeyCode.JoystickButton14 : KeyCode.JoystickButton15);
           }
         }

@@ -36,6 +36,7 @@ public class SpeechResolver : MonoBehaviour, IModal, ISignalReceiver
     private void Awake()
     {
         this.speechInput = GameObject.FindObjectOfType<SpeechInput>();
+        Debug.Log(this.speechInput);
 
         SpeechDict = Database.GetSpeechDictionary();
         SpeechWatcher = GetComponents<ISignalSender<Speech>>()[0] as ISignalSender<Speech>;
