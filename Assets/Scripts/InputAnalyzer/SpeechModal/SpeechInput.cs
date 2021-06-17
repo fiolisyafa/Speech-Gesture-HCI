@@ -25,8 +25,8 @@ public class SpeechInput : MonoBehaviour
     private List<string> deviceOptions = new List<string>();
     private SpeechEnvironment[] environments = new SpeechEnvironment[3]{
         new SpeechEnvironment("normal", 1f, (n) => n <= 50),
-        new SpeechEnvironment("moderate", 0.6f, (n) => n > 50 && n < 65),
-        new SpeechEnvironment("extreme", 0.3f, (n) => n >= 65)
+        new SpeechEnvironment("moderate", 0.6f, (n) => n > 50 && n < 60),
+        new SpeechEnvironment("extreme", 0.3f, (n) => n >= 60)
     };
 
     //DictationRecognizer dictationRecognizer;
