@@ -40,36 +40,44 @@ public class WeightResolver : MonoBehaviour, ISignalReceiver, ISignalSender<List
             weightConstantDivisor += item.ConfidenceLevel;
         }
 
-        // weight constant (K) is calculated only in multimodal mode, otherwise it is 1 by default
-        // simiar to if list contains more than 1 value K would be ideal confd/weight divisor, else K = 1
-        var weightConstant = (list.Count > 1) ? IdealConfidence / weightConstantDivisor : 1;
+        // weight constant (K) is calculated only in both unimodal and multimodal mode. K is not 1 by default for unimodal mode.
+        // k is used to calculate the percentage of the modal's contribution to the final confidences
+        // var weightConstant = (list.Count > 1) ? IdealConfidence / weightConstantDivisor : 1;
+        var weightConstant = IdealConfidence / weightConstantDivisor;
         var msg = "";
         if (DebugResult)
         {
             msg = "incoming signal: count " + list.Count;
-            if(list.Count == 1) msg += "\nsignal is unimodal: no weighting needed\n";
+            //if(list.Count == 1) msg += "\nsignal is unimodal: no weighting needed\n";
+            if(list.Count == 1) msg += "\nsignal is unimodal\n";
             msg += "\nideal confidence: " + IdealConfidence;
             msg += "\nweight constant (K): " + weightConstant + "\n";
 
         }
 
         List<WeightedUnifiedStructure> weightedList = new List<WeightedUnifiedStructure>();
-        if (list.Count > 1) {
-            foreach (UnifiedStructure item in list)
-            {
-                float weight = item.ConfidenceLevel * weightConstant;
-                float confidence = item.ConfidenceLevel;
-                weightedList.Add(new WeightedUnifiedStructure(item, weight, confidence, weight * confidence));
-            }
-        } else {
-            UnifiedStructure item = list[0];
+        foreach (UnifiedStructure item in list)
+        {
             float weight = item.ConfidenceLevel * weightConstant;
             float confidence = item.ConfidenceLevel;
-            weightedList = new List<WeightedUnifiedStructure> {
-                // Use initial confidence as weighted confidence if only one modal is present
-                new WeightedUnifiedStructure(item, weight, confidence, confidence)
-            };
+            weightedList.Add(new WeightedUnifiedStructure(item, weight, confidence, weight * confidence));
         }
+        // if (list.Count > 1) {
+        //     foreach (UnifiedStructure item in list)
+        //     {
+        //         float weight = item.ConfidenceLevel * weightConstant;
+        //         float confidence = item.ConfidenceLevel;
+        //         weightedList.Add(new WeightedUnifiedStructure(item, weight, confidence, weight * confidence));
+        //     }
+        // } else {
+        //     UnifiedStructure item = list[0];
+        //     float weight = item.ConfidenceLevel * weightConstant;
+        //     float confidence = item.ConfidenceLevel;
+        //     weightedList = new List<WeightedUnifiedStructure> {
+        //         // Use initial confidence as weighted confidence if only one modal is present
+        //         new WeightedUnifiedStructure(item, weight, confidence, confidence)
+        //     };
+        // }
 
         if (DebugResult)
         {
